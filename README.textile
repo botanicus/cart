@@ -1,0 +1,88 @@
+h1. About
+
+Cart is framework agnostic solution for shopping cart. There are two existing imlementations. First is *Cart::Simple* which is just basic cart which can store only ID of products without any metadata. The second is *Cart::Advanced* and it is good when you have not just product, but also some metadata as size or color of product etc.
+
+h1. Initialization
+
+h2. Cart::Simple
+
+<pre>
+require "cart/simple"
+Cart.product_model = Product
+</pre>
+
+h2. Cart::Advanced
+
+<pre>
+require "cart/advanced"
+Cart.metadata_model = OrderItem
+</pre>
+
+Metadata model must respond to serialize object method and deserialize class method for storing and restoring data:
+
+<pre>
+class OrderItem
+  include DataMapper::Resource
+  class << self
+    def deserialize(data)
+      self.new(YAML::load(data))
+    end
+  end
+
+  def serialize
+    {:size => self.size, :product_id => self.product.id}.to_yaml
+  end
+end
+</pre>
+
+h2. Logger
+
+Cart is just simple API for your favorite framework, so it haven't any logger itself and it just use the logger of your framework. The only thing you need is setup it:
+
+<pre>
+# whatever what respond to debug method
+Cart.logger = Merb.logger
+</pre>
+
+Maybe you would like to hook the logger, for example add information that the message comes from cart or maybe you just use framework which hasn't any logger at all. In this case you can set logger to lambda or whatever callable object:
+
+<pre>
+# or whatever what respond to to_proc method
+Cart.logger = method(:puts)
+Cart.logger = lambda { |msg| puts(msg) }
+</pre>
+
+h1. Usage
+
+<pre>
+class Application < Merb::Controller
+  # it must be deserialized in each request,
+  # even with memory session store
+  before :initialize_cart
+  
+  def initialize_cart
+    @cart = cookies[:cart] ? Cart.load(cookies[:cart]) : Cart.new
+  end
+
+  def save_cart
+    cookies[:cart] = @cart.save
+  end
+
+  def reset_cart
+    cookies.delete(:cart)
+    @cart = Cart.new
+  end
+
+  def add_to_cart(order_item)
+    self.initialize_cart unless @cart
+    @cart.add(order_item)
+    self.save_cart
+  end
+
+  # Remove all the items with responding product and inverted values from cart
+  def remove_from_cart(order_item)
+    @cart.remove(order_item)
+    self.save_cart
+  end
+end
+</pre>

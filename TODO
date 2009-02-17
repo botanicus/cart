@@ -1,0 +1,7 @@
+- spec advanced and simple carts (other stuff should work)
+- simple and advanced carts should have same interface
+- it should works without logger
+- move all the stuff into model (Cart::Simple.new etc)
+- config should take strings as well (Cart.product_model = "Product")
+- config should have default values (Product, OrderItem)
+- standalone configuration class (maybe something like configatron?) => easier testing
