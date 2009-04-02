@@ -13,7 +13,7 @@ class Cart
   attr_reader :items
 
   def initialize(*items)
-    raise ArgumentError unless items.all? { |item| item.is_a?(@config.metadata_model) }
+    # raise ArgumentError unless items.all? { |item| item.is_a?(@config.metadata_model) || item.nil? }
     @items = items
     @config = self.class
     @config.logger.debug("Cart initialized: #{self.inspect}")
@@ -38,6 +38,7 @@ class Cart
     end
     @items.push(new_item)
     @config.logger.debug("Item #{new_item.inspect} was added to cart")
+    return new_item.product
   end
 
   def remove(params)
@@ -49,6 +50,7 @@ class Cart
     end
     removed = pre - @items
     @config.logger.debug("Item #{removed.first.inspect} was removed from cart")
+    return removed.first.product
   end
 
   def price
