@@ -30,7 +30,7 @@ class Cart
     raise ArgumentError unless params.is_a?(Hash)
     new_item = @config.metadata_model.new(params)
     @items.map do |item|
-      if item.product.eql?(new_item.product) && item.inverted.eql?(new_item.inverted)
+      if items_equal?(item, new_item)
         item.count += new_item.count
         @config.logger.debug("Item #{item.inspect} count was increased to #{item.count} (by #{new_item.count})")
         return # important
@@ -40,17 +40,26 @@ class Cart
     @config.logger.debug("Item #{new_item.inspect} was added to cart")
     return new_item.product
   end
+  
+  def items_equal?(old, new)
+    # this is important, we must compare all the properties exclude count
+    old = old.dup.tap { |old| old.count = 1 }
+    new = new.dup.tap { |new| new.count = 1 }
+    new.eql?(old)
+  end
 
   def remove(params)
     raise ArgumentError unless params.is_a?(Hash)
     item_to_remove = @config.metadata_model.new(params)
+    p [item_to_remove], @items ####
     pre = @items.dup
-    @items.delete_if do |item|
-      item.product.eql?(item_to_remove.product) && item.inverted.eql?(item_to_remove.inverted)
-    end
+    @items.delete_if { |item| items_equal?(item, item_to_remove) }
     removed = pre - @items
-    @config.logger.debug("Item #{removed.first.inspect} was removed from cart")
-    return removed.first.product
+    if removed.first
+      @config.logger.debug("Item #{removed.first.inspect} was removed from cart")
+    else
+      @config.logger.debug("Any item matched")
+    end
   end
 
   def price
@@ -68,7 +77,7 @@ class Cart
       block.call(item)
     end
   end
-
+  
   def empty?
     @items.empty?
   end
