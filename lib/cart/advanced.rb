@@ -45,6 +45,12 @@ class Cart
     # this is important, we must compare all the properties exclude count
     old = old.dup.tap { |old| old.count = 1 }
     new = new.dup.tap { |new| new.count = 1 }
+    # from form empty values goes as "", but deserialized empty items are nil
+    properties = new.class.properties.map(&:name)
+    properties.each do |property|
+      value = new.send(property)
+      new.send("#{property}=", nil) if value.respond_to?(:empty?) && value.empty?
+    end
     new.eql?(old)
   end
 
