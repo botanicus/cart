@@ -72,6 +72,14 @@ class Cart
     @items.map { |item| item.price }.inject { |sum, price| sum + price }
   end
 
+  def vat
+    @items.map { |item| item.vat }.inject { |sum, price| sum + price }
+  end
+
+  def price_without_vat
+    @items.map { |item| item.price_without_vat }.inject { |sum, price| sum + price }
+  end
+
   def save
     data = @items.map { |item| item.serialize }.join(";")
     @config.logger.debug("Cart saved: #{data.inspect}")
