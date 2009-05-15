@@ -26,19 +26,21 @@ class Cart
     @items = items
   end
 
-  def add(params)
-    raise ArgumentError unless params.is_a?(Hash)
-    new_item = @config.metadata_model.new(params)
-    @items.map do |item|
-      if items_equal?(item, new_item)
-        item.count += new_item.count
-        @config.logger.debug("Item #{item.inspect} count was increased to #{item.count} (by #{new_item.count})")
-        return # important
+  def add(*params_list)
+    params.each do |params|
+      raise ArgumentError unless params.is_a?(Hash)
+      new_item = @config.metadata_model.new(params)
+      @items.map do |item|
+        if items_equal?(item, new_item)
+          item.count += new_item.count
+          @config.logger.debug("Item #{item.inspect} count was increased to #{item.count} (by #{new_item.count})")
+          return # important
+        end
       end
+      @items.push(new_item)
+      @config.logger.debug("Item #{new_item.inspect} was added to cart")
+      return new_item.product
     end
-    @items.push(new_item)
-    @config.logger.debug("Item #{new_item.inspect} was added to cart")
-    return new_item.product
   end
   
   def items_equal?(old, new)
