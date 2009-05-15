@@ -69,15 +69,15 @@ class Cart
   end
 
   def price
-    @items.map { |item| item.price }.inject { |sum, price| sum + price }
+    @items.map { |item| item.price }.inject(:+)
   end
 
   def vat
-    @items.map { |item| item.vat }.inject { |sum, price| sum + price }
+    @items.map { |item| item.vat }.inject(:+)
   end
 
   def price_without_vat
-    @items.map { |item| item.price_without_vat }.inject { |sum, price| sum + price }
+    @items.map { |item| item.price_without_vat }.inject(:+)
   end
 
   def save
