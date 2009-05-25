@@ -26,10 +26,14 @@ class Cart
     @items = items
   end
 
+  # params_list must be list of hashes or list of @config.metadata_model instances
   def add(*params_list)
-    params.each do |params|
-      raise ArgumentError unless params.is_a?(Hash)
-      new_item = @config.metadata_model.new(params)
+    params_list.each do |params|
+      if params.is_a?(Hash)
+        new_item = @config.metadata_model.new(params)
+      else
+        new_item = params
+      end
       @items.map do |item|
         if items_equal?(item, new_item)
           item.count += new_item.count
