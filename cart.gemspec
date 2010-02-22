@@ -1,13 +1,10 @@
-begin
-  require "rubygems/specification"
-rescue SecurityError
-  # http://gems.github.com
-end
+#!/usr/bin/env gem build
 
-VERSION  = "0.0.2"
+require "base64"
+
 SPECIFICATION = ::Gem::Specification.new do |s|
   s.name = "cart"
-  s.version = VERSION
+  s.version = "0.0.2"
   s.authors = ["Jakub Šťastný aka Botanicus"]
   s.homepage = "http://github.com/botanicus/cart"
   s.summary = "Cart is framework agnostic solution for shopping cart."
