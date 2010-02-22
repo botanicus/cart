@@ -43,7 +43,7 @@ class Cart
       end
       @items.push(new_item)
       @config.logger.debug("Item #{new_item.inspect} was added to cart")
-      return new_item.product
+      return new_item#.product
     end
   end
   
