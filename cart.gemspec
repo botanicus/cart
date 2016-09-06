@@ -2,9 +2,9 @@
 
 require "base64"
 
-SPECIFICATION = ::Gem::Specification.new do |s|
+Gem::Specification.new do |s|
   s.name = "cart"
-  s.version = "0.0.2"
+  s.version = "0.0.4"
   s.authors = ["Jakub Šťastný aka Botanicus"]
   s.homepage = "http://github.com/botanicus/cart"
   s.summary = "Cart is framework agnostic solution for shopping cart."
@@ -15,5 +15,5 @@ SPECIFICATION = ::Gem::Specification.new do |s|
 
   s.require_paths = ["lib"]
   # s.required_ruby_version = ::Gem::Requirement.new(">= 1.9.1")
-  # s.rubyforge_project = "cart"
+  s.rubyforge_project = "cart"
 end

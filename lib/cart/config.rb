@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 require "cart/logger_stub"
 
 class NotInitializedError < StandardError ; end

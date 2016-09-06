@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 # This class is just a wrapper which give you 
 # chance to give callable object instead of logger.
 # See README file for more informations.

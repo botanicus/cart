@@ -1,3 +1,5 @@
+# encoding: utf-8
+
 require "cart/config"
 
 class Cart
@@ -47,23 +49,23 @@ class Cart
     end
   end
   
-  def items_equal?(old, new)
+  def items_equal?(one, other)
     # this is important, we must compare all the properties exclude count
-    old = old.dup.tap { |old| old.count = 1 }
-    new = new.dup.tap { |new| new.count = 1 }
-    # from form empty values goes as "", but deserialized empty items are nil
-    properties = new.class.properties.map(&:name)
-    properties.each do |property|
-      value = new.send(property)
-      new.send("#{property}=", nil) if value.respond_to?(:empty?) && value.empty?
-    end
-    new.eql?(old)
+    block = Proc.new { |item| item.count = 1 }
+    one.tap(&block) == other.tap(&block)
+
+    # # from form empty values goes as "", but deserialized empty items are nil
+    # properties = new.class.properties.map(&:name)
+    # properties.each do |property|
+    #   value = new.send(property)
+    #   new.send("#{property}=", nil) if value.respond_to?(:empty?) && value.empty?
+    # end
+    # new.eql?(old)
   end
 
   def remove(params)
     raise ArgumentError unless params.is_a?(Hash)
     item_to_remove = @config.metadata_model.new(params)
-    p [item_to_remove], @items ####
     pre = @items.dup
     @items.delete_if { |item| items_equal?(item, item_to_remove) }
     removed = pre - @items
@@ -93,9 +95,7 @@ class Cart
   end
 
   def each(&block)
-    @items.each do |item|
-      block.call(item)
-    end
+    @items.each(&block)
   end
   
   def empty?
@@ -103,6 +103,8 @@ class Cart
   end
 
   def count
-    @items.length
+    @items.inject(0) do |sum, item|
+      sum + item.count
+    end
   end
 end
